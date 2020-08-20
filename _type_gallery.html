@@ -1,0 +1,323 @@
+{@$oTagModel = getModel('tag')}
+
+<block cond="$ipSET_top_tag == 'Y'">
+<!--//tag box-->
+	{@
+		$obj = new stdClass;
+		$obj->module_srl = $module_srl;
+		$obj->list_count = $ipSET_top_tag_count;
+		$output = $oTagModel->getTagList($obj);
+		$tag_list = $output->data;
+	}
+
+	<!--@if($ipSET_top_tag_shuffle == 'Y')-->
+	{@shuffle($tag_list)}
+	<!--@end-->
+
+	<!--//태그 퍼센트-->
+	{@$tagsMaxCt = 0;}
+
+	<!--@foreach($tag_list as $val)-->
+		<!--@if($tagsMaxCt < $val->count)-->
+			{@$tagsMaxCt = $val->count}
+		<!--@end-->
+	<!--@end-->
+	
+	
+	<div class="board_tag_list" cond="$tag_list">
+		<block loop="$tag_list => $no,$val">
+		{@$rank = ceil($val->count/$tagsMaxCt*100/(100/6))}
+		<!--@if($rank > 6)-->
+			{@$rank = 6;}
+		<!--@end-->
+		<a href="{getUrl('','mid',$mid,'search_target','tag','search_keyword',$val->tag)}"  class="rank{abs($rank-6)+1}">{htmlspecialchars($val->tag)}<span class="tag_count" cond="$ipSET_top_tag_sum == 'Y'">({$val->count})</span></a>
+		</block>
+	</div>
+</block>
+
+<div class="board_notices <!--@if($ipSET_noticecolor)-->board_notices_{$ipSET_noticecolor}<!--@end-->" cond="$notice_list" >
+	<block loop="$notice_list=>$no,$document">
+		<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}">
+			<strong>{$document->getTitle()}</strong>
+			<span>
+				<span>{$document->getNickName()}</span>
+				<span>{$document->getRegdate('Y.m.d')}</span>
+			</span>
+		</a>
+	</block>
+</div>
+
+<div class="board_gallery" data-list-count="{count($document_list)}" data-total = "{$page_navigation->total_count}" data-page="{$page}" data-notice-count = "{count($notice_list)}">
+	<ul>
+		<block loop="$document_list=>$no,$document">
+			{@
+				//document 테그
+				$docTagsObj = new stdclass;
+				$docTagsObj->document_srl = $document->document_srl;
+				$docTags = $oTagModel->getDocumentsTagList($docTagsObj);
+				$docTags = $docTags->data;
+				krsort($docTags);
+
+				$tagList = '';
+			}
+
+			<!--@foreach($docTags as $tagkey => $tagval)-->
+				<!--//구분자-->
+
+				{@end($docTags)}
+				<!--@if($tagkey === key($docTags))-->
+					{@$tagListJoin = ''}
+				<!--@else-->
+					{@$tagListJoin = ', '}
+				<!--@end-->
+				
+				{@$tagList .= '<span>'.$tagval->tag.' '.$tagListJoin.'</span>'}
+			<!--@end-->
+
+
+		{@
+			$curIsDoc = ($document_srl == $document->document_srl) ? 'Y' : '';
+			$secretIs = $document->variables[status]=='SECRET';
+		}
+		<li class="boskin_gall_item <!--@if($curIsDoc == 'Y')-->curItem<!--@end-->">
+			
+			<input type="checkbox" name="cart" value="{$document->document_srl}" class="iCheck" title="Check This Article" onclick="doAddDocumentCart(this)" checked="checked"|cond="$document->isCarted()" cond="$grant->manager" />
+
+			<div class="boskin_gall_image">
+				<!--//new icon-->
+				<!--@if($module_info->duration_new_use != 'N')-->
+					<!--@if((int)($document->getRegdate('YmdHis')>date("YmdHis", time()-$module_info->duration_new*60*60)))-->
+						<div class="new_icon">
+							<i class="xi-new"></i>
+						</div>
+					<!--@end-->
+				<!--@end-->
+
+				<!--//lock icon-->
+				<block cond="$secretIs">
+					<div class="lock_alert">
+						<div>
+							<div>
+								<i class="xi-lock"></i>
+								<span>LOCK</span>
+							</div>
+						</div>
+					</div>
+				</block>
+
+				<!--//mouse over layout : s-->
+				<div class="boskin_mover" cond="$ipSET_list_t_used == 'Y'">
+					<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}">
+						<div class="boskin_mover_wrap">
+							<strong cond="$ipSET_list_t_txt1=='Y'">{$document->getTitleText()}</strong>
+							<div class="boskin_winfo" cond="$ipSET_list_t_txt2=='Y'">
+								<block loop="$list_config=>$key,$val">
+									<span cond="$val->type=='regdate'"><i class="xi-time"></i> {$document->getRegdate('Y.m.d')}</span>
+									<span cond="$val->type=='nick_name'"><i class="xi-user"></i> {$document->getNickName()}</span>
+									<span cond="$val->type=='readed_count'"><i class="xi-eye"></i> {$document->get('readed_count')}</span>
+								</block>
+							</div>
+
+							<div class="boskin_listconfig" cond="$ipSET_list_t_txt3 == 'Y'">
+								<block loop="$list_config=>$key,$val">
+									<div cond="$val->type == 'summary'" class="boskin_summary">
+										{$document->getSummary($ipSET_summary_cut)}
+									</div>
+									<div cond="$val->eid && $document->getExtraValueHTML($val->idx)">
+										<b>{$val->name}</b> {$document->getExtraValueHTML($val->idx)}
+									</div>
+								</block>
+							</div>
+
+						</div>
+					</a>
+				</div>
+				<!--//mouse over layout : e-->
+
+				{@
+					//유튜브 썸네일
+					$movieUrl = explode('/',$document->getExtraEidValue($xx_eid_name));
+					$movieUrl = end($movieUrl);
+					$movieUrl = strpos($movieUrl,'v=') > 0 ? substr($movieUrl, strpos($movieUrl,"v=")+2) : $movieUrl;
+					
+					$thumbnail = '';
+				}
+
+				<!--//커버이미지 검사-->
+				{@$cover_image = false;}
+				<!--@foreach($document->getUploadedFiles() as $uploadImage)-->
+					<!--@if($uploadImage->cover_image == 'Y')-->
+						{@$cover_image = true;}
+						{@$source_file = $uploadImage->uploaded_filename;break;}
+					<!--@end-->
+				<!--@end-->
+
+				<!--@if($movieUrl && !$cover_image)-->
+					{@$thumbnail = 'https://i.ytimg.com/vi/'.$movieUrl.'/hqdefault.jpg'}
+				<!--@else if($cover_image)-->
+					{@$thumbnail = $document->getThumbnail($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnil_type)}
+				<!--@end-->
+
+				<!--@if($document->isSecret() && !$document->isGranted())-->
+					{@$thumbnail =''}
+				<!--@end-->
+
+				<a class="boskin_image_link" href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}" <!--@if($thumbnail)-->style="background-image:url({$thumbnail})"<!--@end-->>
+					<div class="bo_no_image" cond="!$thumbnail && !$secretIs">
+						<div>
+							<i class="xi-close-square"></i>
+							<span>NO IMAGE</span>
+						</div>
+					</div>
+				</a>
+				<span class="tags" cond="$tagList && $ipSET_list_tag=='Y'"><i class="xi-tag"></i> {$tagList}</span>
+
+			</div>
+			
+
+			<div class="boskin_sum_info" cond="$ipSET_list_b_used == 'Y'">
+				<div class="bo_list_tit" cond="$ipSET_list_b_txt1 == 'Y'">
+					<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}">{$document->getTitle()}</a>
+				</div>
+
+				<div class="boskin_sum_info_cont">
+					<div class="boskin_winfo" cond="$ipSET_list_b_txt2 == 'Y'">
+						<block loop="$list_config=>$key,$val">
+							<span cond="$val->type=='regdate'"><i class="xi-time"></i> {$document->getRegdate('Y.m.d')}</span>
+							<span cond="$val->type=='nick_name'"><i class="xi-user"></i> {$document->getNickName()}</span>
+							<span cond="$val->type=='readed_count'"><i class="xi-eye"></i> {$document->get('readed_count')}</span>
+							<span cond="$val->type=='comment_status'"><a cond="$document->getCommentCount()" href="{getUrl('document_srl', $document->document_srl)}#comment" class="replyNum" title="Replies"><i class="xi-comment"></i>{$document->getCommentCount()}</a></span>
+						</block>
+					</div>
+					<div class="boskin_listconfig" cond="$ipSET_list_b_txt3 == 'Y'">
+						<block loop="$list_config=>$key,$val">
+							<div cond="$val->type == 'summary'" class="boskin_summary">
+								{$document->getSummary($ipSET_summary_cut)}
+							</div>
+							<div cond="$val->eid && $document->getExtraValueHTML($val->idx)">
+								<b>{$val->name}</b> {$document->getExtraValueHTML($val->idx)}
+							</div>
+						</block>
+					</div>
+				</div>
+
+			</div>
+		</li>
+		</block>
+	</ul>
+
+</div>
+
+<block cond="$ipSET_Ajax == 'Y'">
+
+<div class="board_loader_box" cond="$ipSET_Ajax_type=='click'">
+	<button id="board_loader"><i class="xi-plus"></i> 불러오기 <span>(<em>{$page_navigation->total_count - count($notice_list) - count($document_list) * $page}</em>)</span></button>
+	
+</div>
+
+{@$pagejv = $page}
+<!--@if(!$pagejv)-->
+{@$pagejv = 1}
+<!--@end-->
+
+<!--@if(strpos(getUrl('','mid',$mid),'?') !== false)-->
+{@$nextpageUrl = getUrl('','mid',$mid).'&'}
+<!--@else-->
+{@$nextpageUrl = getUrl('','mid',$mid).'?'}
+<!--@end-->
+<script>
+jQuery(function($){
+	var curpage = {$pagejv}+1;
+	var durl = "{$nextpageUrl}";
+
+	var wHeight = $(window).height();
+	var loadCheck = true;
+	var bottomPositon;
+	var loadingObjTag = '<div class="board_ajax_loading"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div>';
+	var loadingObj;
+	var search_target = '';
+	var search_keyword = '';
+	var contObj = $('#board_loader span em');
+	var countDoc = contObj.html();
+
+	<!--@if($search_target)-->
+	search_target = '{$search_target}';
+	<!--@end-->
+
+	<!--@if($search_keyword)-->
+	search_keyword = '{$search_keyword}';
+	<!--@end-->
+
+	var searchQuery = '';
+
+	if(search_target) searchQuery += '&search_target='+search_target;
+	if(search_keyword) searchQuery += '&search_keyword='+search_keyword;
+
+	var lastalert = '<div class="board_ajax_end"><span>마지막입니다 -_-a</span></div>';
+
+	function bottomPositionCal(){
+		bottomPositon = $('.board').position().top + $('.board').outerHeight() - $(window).height();
+	}
+
+	bottomPositionCal();
+
+	function getPage(page){
+		if(!loadCheck){
+			if($('.board_ajax_end').length == 0) $('.board_gallery').append(lastalert);
+			return false;
+		}
+
+		loadCheck = false;
+
+		if(!loadingObj){
+
+		$('.board_gallery').append(loadingObjTag);
+		loadingObj = $('.board_gallery .board_ajax_loading');
+		}
+
+		loadingObj.css('display','block');
+		
+		$.ajax({url : page})
+			.done(function(data){
+				var litem = $(data).find('.board_gallery > ul >li');
+
+				//남은문서반영
+				countDoc -= $(data).find('.board_gallery').data('list-count');
+
+				contObj.html(countDoc);
+
+				$('.board_gallery > ul').append(litem);
+				loadingObj.css('display','none');
+
+				if(litem.length > 1){
+					curpage++;
+					bottomPositionCal();
+					loadCheck = true;
+				}
+
+			});
+	}
+
+	$(window).resize(function(){
+		bottomPositionCal();
+	});
+	
+	<!--@if($ipSET_Ajax_type=='scroll')-->
+	//auto loader
+	$(window).scroll(function(){
+		if(bottomPositon < $(window).scrollTop()){
+			getPage(durl+"&page="+curpage+searchQuery);
+		}
+	});
+	<!--@end-->
+
+	<!--@if($ipSET_Ajax_type=='click')-->
+	//click loader
+	$('#board_loader').click(function(){
+		getPage(durl+"page="+curpage+searchQuery);
+	});
+	<!--@end-->
+
+});
+</script>
+</block>

@@ -1,0 +1,297 @@
+{@$doc_count = count($document_list)}
+{@$z=0}
+<!--@foreach($document_list as $no => $document)-->
+    {@ $doc_srl[$z] = $document->document_srl}
+    <!--@if($document->document_srl == $oDocument->document_srl)-->
+        {@ $now_z = $z }
+    <!--@end-->
+    {@$z++;}
+<!--@end-->
+ 
+<!-- 현재 글이 현제 페이지에서 첫번째 글이며, 현재 페이지가 1이 아닐 때 -->
+<!-- 이전 페이지의 document_list를 가져와서 마지막 글의 document_srl을 구한다 -->
+<!--@if($now_z == 0 && $page > 1)-->
+    {@
+        $oModuleModel = &getModel('module');
+        $module_srl_temp = $oModuleModel->getModuleSrlByMid($mid);
+ 
+        if(is_array($module_srl_temp)) $module_srl = $module_srl_temp[0];
+        else $module_srl = $module_srl_temp;
+ 
+        $args->module_srl = $module_srl;
+        $args->category_srl = $category_srl;
+        $args->list_count = $module_info->list_count;
+        $args->search_target = $search_target;
+        $args->search_keyword = $search_keyword;
+        $args->page = $page-1;
+        $args->sort_index = $module_info->sort_index;
+        $args->order_type = $module_info->order_type;
+ 
+        $docList_output = executeQueryArray('document.getDocumentList', $args);
+    }
+ 
+    {@$x=0}
+    <!--@foreach($docList_output->data as $doc)-->
+        <!--@if($x == count($docList_output->data) - 1)-->
+            {@ $beforeDoc = $doc->document_srl }
+        <!--@end-->
+        {@$x++;}
+    <!--@end-->
+    {@ $afterDoc = $doc_srl[$now_z+1] }
+ 
+<!-- 현재 글이 현제 페이지에서 가장 마지막 글이며, 현재 페이지가 마지막 페이지가 아닐 때 -->
+<!-- 다음 페이지의 document_list를 가져와서 첫번째 글의 document_srl을 구한다 -->
+<!--@else if($now_z == $doc_count - 1 && $page < $total_page)-->
+    {@
+        $oModuleModel = &getModel('module');
+        $module_srl_temp = $oModuleModel->getModuleSrlByMid($mid);
+ 
+        if(is_array($module_srl_temp)) $module_srl = $module_srl_temp[0];
+        else $module_srl = $module_srl_temp;
+ 
+        $args->module_srl = $module_srl;
+        $args->category_srl = $category_srl;
+        $args->list_count = $module_info->list_count;
+        $args->search_target = $search_target;
+        $args->search_keyword = $search_keyword;
+        $args->page = $page+1;
+        $args->sort_index = $module_info->sort_index;
+        $args->order_type = $module_info->order_type;
+ 
+        $docList_output = executeQueryArray('document.getDocumentList', $args);
+    }
+ 
+    {@$x=0}
+    <!--@foreach($docList_output->data as $doc)-->
+        <!-- 첫번째 글일 경우 -->
+        <!--@if($x == 0)-->
+            {@ $afterDoc = $doc->document_srl }
+        <!--@end-->
+        {@$x++;}
+    <!--@end-->
+    {@ $beforeDoc = $doc_srl[$now_z-1] }
+ 
+<!-- 그 외 -->
+<!--@else-->
+    {@ $beforeDoc = $doc_srl[$now_z-1]; $afterDoc = $doc_srl[$now_z+1]; }
+<!--@end-->
+ 
+
+		{@$oDocumenModel = getModel('document')}
+
+
+<!--@if($beforeDoc)-->
+		<!--//이전 게시물 제목가져오기-->
+    {@ $beforeHref = getUrl('document_srl',$beforeDoc,'listStyle',$listStyle, 'cpage','', 'page', '') }
+		{@$beforDocument = $oDocumenModel->getDocument($beforeDoc)}
+		{@$beforeDocumentTitle = $beforDocument->getTitle()}
+<!--@else-->
+    {@ $beforeHref = "javascript:;" }
+<!--@end-->
+ 
+<!--@if($afterDoc)-->
+    {@ $afterHref = getUrl('document_srl',$afterDoc,'listStyle',$listStyle, 'cpage','', 'page', '') }
+		{@$afterDocument = $oDocumenModel->getDocument($afterDoc)}
+		{@$afterDocumentTitle = $afterDocument->getTitle()}
+<!--@else-->
+    {@ $afterHref = "javascript:;" }
+<!--@end-->
+ 
+<!-- 이전글, 다음글 구하기 : e -->
+
+
+{@//print_R($oDocument)}
+<div class="board_read">
+	<!-- READ HEADER -->
+
+	<div class="read_header">
+		<h1>
+			<a href="{getUrl('category',$oDocument->get('category_srl'), 'document_srl', '')}" class="category" cond="$module_info->use_category=='Y' && $oDocument->get('category_srl')">[{$category_list[$oDocument->get('category_srl')]->title}]</a>
+			<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+		</h1>
+		<p class="meta">
+			<span class="author">
+				<i class="xi-user"></i><a cond="$module_info->display_author!='N' && !$oDocument->getMemberSrl() && $oDocument->isExistsHomepage()" href="{$oDocument->getHomepageUrl()}" onclick="window.open(this.href);return false;" class="author">{$oDocument->getNickName()}</a>
+				<block cond="$module_info->display_author!='N' && !$oDocument->getMemberSrl() && !$oDocument->isExistsHomepage()">{$oDocument->getNickName()}</block>
+
+				<a cond="$module_info->display_author!='N' && $oDocument->getMemberSrl()" href="#popup_menu_area" class="member_{$oDocument->get('member_srl')} author" onclick="return false">{$oDocument->getNickName()}</a>
+			</span>
+			<span class="time">
+				<i class="xi-time"></i> {$oDocument->getRegdate('Y.m.d H:i')}
+			</span>
+			<span class="read_count">
+				<i class="xi-eye"></i> {$oDocument->get('readed_count')}
+			</span>
+			<span class="vote_count" cond="$oDocument->get('voted_count')!=0">
+				<i class="xi-thumbs-up"></i> {$oDocument->get('voted_count')}
+			</span>
+		</p>
+	</div>
+	<!-- /READ HEADER -->
+	<!-- Extra Output -->
+	<div class="boskin_table" cond="$oDocument->isExtraVarsExists() && (!$oDocument->isSecret() || $oDocument->isGranted())">
+		<table>
+			<tr loop="$oDocument->getExtraVars() => $key,$val" cond="!in_array($val->eid, $devExtra)">
+				<th scope="row">{$val->name}</th>
+				<td>{$val->getValueHTML()}&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+
+
+{@
+	//옵션들
+	$movieUrlOpt = [];
+	$movieTagOpt = [];
+
+	$dex_autoplay = end($oDocument->getExtraEidValue('dex_autoplay')) === '사용' ? '1' : '0';
+	array_push($movieUrlOpt,'autoplay='.$dex_autoplay);
+	array_push($movieTagOpt, 'autoplay');
+
+	$dex_starttime = $oDocument->getExtraEidValue('dex_starttime');
+	array_push($movieUrlOpt, 'start='.$dex_starttime);
+
+	$dex_endtime = $oDocument->getExtraEidValue('dex_endtime');
+	array_push($movieUrlOpt, 'end='.$dex_endtime);
+
+	$dex_rel = $oDocument->getExtraEidValue('dex_rel');
+	array_push($movieUrlOpt, 'rel='.$dex_rel);
+}
+
+{@
+	//영상
+	$movieUrl = explode('/',$oDocument->getExtraEidValue('dex_embed_srl'));
+	$movieUrl = end($movieUrl);
+
+	$movieUrl = strpos($movieUrl,'v=') > 0 ? substr($movieUrl, strpos($movieUrl,"v=")+2) : $movieUrl;
+}
+
+
+	<!-- //Extra Output -->
+	<!-- READ BODY -->
+	<div class="read_body">
+		<!--@if($oDocument->isSecret() && !$oDocument->isGranted())-->
+		<form action="./" method="get" onsubmit="return procFilter(this, input_password)" class="secretForm">
+			<input type="hidden" name="mid" value="{$mid}" />
+			<input type="hidden" name="page" value="{$page}" />
+			<input type="hidden" name="document_srl" value="{$oDocument->document_srl}" />
+			<p><label for="cpw">{$lang->msg_is_secret} {$lang->msg_input_password}</label></p>
+			<p><input type="password" name="password" id="cpw" class="iText" /><input type="submit" value="{$lang->cmd_input}" class="btn" />
+			</p>
+		</form>
+		<!--@else-->
+
+		<div class="bo_embed-container" cond="$movieUrl">
+			<iframe src="https://www.youtube.com/embed/{$movieUrl}?VQ=HD720&amp;{join('&amp;',$movieUrlOpt)}" allow="{join(' ',$movieTagOpt)}" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+		</div>
+
+		{$oDocument->getContent(false)}
+
+		<!--@end-->
+	</div>
+
+	<!-- /READ BODY -->
+	<!-- READ FOOTER -->
+	<div class="read_footer">
+			<!--//sns-->
+
+
+	<div class="bnt_set">
+		<div class="sns sns_center">
+			<ul>
+				<li><a href="#" class="insp_btn clipboardBtn" data-docurl="{$oDocument->getPermanentUrl()}"><i class="xi-link"></i></a><input id="clip_target" type="text" value="" style="position:absolute;opacity:0;top:-9999em;"/></li>
+				<li><a href="#" class="facebook insp_btn"><i class="xi-facebook"></i></a></li>
+				<li><a href="#" class="google insp_btn"><i class="xi-google-plus"></i></a></li>
+				<li><a href="#" class="twitter insp_btn"> <i class="xi-twitter"></i></a></li>
+				<li><a href="{getUrl('act','dispDocumentPrint')}" class="insp_btn" target="_blank"><i class="xi-print"></i></a></li>
+			</ul>
+		</div>
+		<script>
+		var sTitle = '{$oDocument->getTitleText()}';
+		jQuery(function($){
+			$('.twitter').snspost({
+				type : 'twitter',
+				content : sTitle + ' {$oDocument->getPermanentUrl()}'
+			});
+			$('.facebook').snspost({
+				type : 'facebook',
+				content : sTitle
+			});
+			$('.google').snspost({
+				type : 'google',
+				content : sTitle
+			});
+		});
+		</script>
+		
+	</div>
+		<!--//sns-->
+	
+
+		<!--첨부파일-->
+		<div cond="$oDocument->hasUploadedFiles() && $module_info->ipSET_fileShow!='N'" class="fileList">
+			<button type="button" class="toggleFile" onclick="jQuery(this).next('ul.files').toggle();"><i class="xi-diskette"></i> {$lang->uploaded_file} [<strong>{$oDocument->get('uploaded_count')}</strong>]</button>
+			<ul class="files">
+				<li loop="$oDocument->getUploadedFiles()=>$key,$file">
+					<a href="{getUrl('')}{$file->download_url}">
+						<i class="xi-download"></i>
+						{$file->source_filename} <span class="fileSize">File Size:{FileHandler::filesize($file->file_size)} / Download:{number_format($file->download_count)}</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+
+
+		<div class="tns">
+			{@
+				$tag_list = $oDocument->get('tag_list');
+				$tag_total = count($tag_list);
+			}
+			<span class="tags" cond="count($tag_list)">
+				<i class="xi-tags"></i>
+				<!--@for($i=0;$i<$tag_total;$i++)-->
+					{@ $tag = $tag_list[$i]; }
+					<a href="{getUrl('search_target','tag','search_keyword',$tag,'document_srl','')}" class="tag" rel="tag">{htmlspecialchars($tag)}</a>
+					<span cond="$tag_total-1 > $i">,</span>
+				<!--@end-->
+			</span>
+
+			
+			<!--//
+			<a class="document_{$oDocument->document_srl} action" href="#popup_menu_area" onclick="return false">{$lang->cmd_document_do}</a>
+			-->
+
+
+		</div>
+
+		<!--//서명-->
+		<div class="sign" cond="$module_info->display_sign!='N'&&($oDocument->getProfileImage()||$oDocument->getSignature())">
+			<div class="image">
+				<img cond="$oDocument->getProfileImage()" src="{$oDocument->getProfileImage()}" alt="Profile" class="pf" />
+			</div>
+			<div class="sign_content">
+				<strong class="sign_name">{$oDocument->getNickName()}</strong>
+				<div cond="$oDocument->getSignature()" class="tx">{$oDocument->getSignature()}</div>
+			</div>
+		</div>
+
+		<div class="btn_set"> 
+			<div class="btn_section pull_right">
+				<a cond="$oDocument->isEditable()" class="insp_btn" href="{getUrl('act','dispBoardWrite','document_srl',$oDocument->document_srl,'comment_srl','')}"><i class="xi-eraser"></i>{$lang->cmd_modify}</a>
+				<a cond="$oDocument->isEditable()" class="insp_btn" href="{getUrl('act','dispBoardDelete','document_srl',$oDocument->document_srl,'comment_srl','')}"><i class="xi-trash"></i>{$lang->cmd_delete}</a>
+				<a href="{getUrl('document_srl','')}" class="insp_btn"><i class="xi-list-ul-l"></i>{$lang->cmd_list}</a>
+				<a href="{$afterHref}" cond="$afterDoc" class="insp_btn insp_single"><i class="xi-angle-left"></i>{@//$afterDocumentTitle}</a>
+				<a href="{$beforeHref}" cond="$beforeDoc" class="insp_btn insp_single"><i class="xi-angle-right"></i>{@//$beforeDocumentTitle}</a>
+			</div>
+		</div>
+
+	</div>
+	<!-- /READ FOOTER -->
+</div>
+
+<block cond="$oDocument->allowTrackback()">
+	<include target="_trackback.html" />
+</block>
+
+
+<include target="_comment.html" />

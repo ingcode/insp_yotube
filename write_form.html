@@ -1,0 +1,178 @@
+<include target="_header.html" />
+<form action="./" method="post" onsubmit="return procFilter(this, window.insert)" class="board_write">
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="content" value="{$oDocument->getContentText()}" />
+	<input type="hidden" name="document_srl" value="{$document_srl}" />
+
+	<caption><em>*</em> : {$lang->is_required}</caption>
+	<div class="boskin_table viewWrite">
+		<table>
+			<tr cond="$module_info->use_category=='Y'">
+				<th>{$lang->category}</th>
+				<td>
+					<select name="category_srl">
+						<option value="">{$lang->category}</option>
+						<option loop="$category_list => $val" disabled="disabled"|cond="!$val->grant" value="{$val->category_srl}" selected="selected"|cond="$val->grant&&$val->selected||$val->category_srl==$oDocument->get('category_srl')">
+							{str_repeat("&nbsp;&nbsp;",$val->depth)} {$val->title} ({$val->document_count})
+						</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>{$lang->title}</th>
+				<td>
+					<input  type="text" name="title" class="iText title" title="{$lang->title}" value="{htmlspecialchars($oDocument->getTitleText())}"|cond="$oDocument->getTitleText()"/>
+				</td>
+			</tr>
+			<tr cond="$grant->manager">
+				<th>관리자설정</th>
+				<td>
+					<input cond="$grant->manager" type="checkbox" name="is_notice" value="Y" class="iCheck" checked="checked"|cond="$oDocument->isNotice()" id="is_notice" />
+					<label for="is_notice">{$lang->notice}</label>
+					
+					<input type="checkbox" name="title_bold" id="title_bold" class="iCheck" value="Y" checked="checked"|cond="$oDocument->get('title_bold')=='Y'" />
+					<label for="title_bold">{$lang->title_bold}</label>
+				</td>
+			</tr>
+			<block cond="!$is_logged">
+			<tr>
+				<th><label for="userName" class="iLabel">{$lang->writer}</label></th>
+				<td><input type="text" name="nick_name" id="userName" class="iText userName" style="width:80px" value="{htmlspecialchars($oDocument->get('nick_name'))}" /></td>
+			</tr>
+			<tr>
+				<th><label for="userPw" class="iLabel">{$lang->password}</label></th>
+				<td><input type="password" name="password" id="userPw" class="iText userPw" style="width:80px" /></td>
+			</tr>
+			<!--//
+			<tr>
+				<th><label for="homePage" class="iLabel">{$lang->homepage}</label></th>
+				<td><input type="text" name="homepage" id="homePage" class="iText homePage"  style="width:140px"value="{htmlspecialchars($oDocument->get('homepage'))}" /></td>
+			</tr>
+			-->
+			</block>
+
+			<tr>
+				<th>게시글설정</th>
+				<td>
+					<input type="checkbox" name="comment_status" class="iCheck" value="ALLOW" checked="checked"|cond="$oDocument->allowComment()" id="comment_status" />
+					<label for="comment_status">{$lang->allow_comment}</label>
+					<!--
+					<input type="checkbox" name="allowTrackback" class="iCheck" value="Y" checked="checked"|cond="$oDocument->allowTrackback()" id="allow_trackback" />
+					<label for="allow_trackback">{$lang->allow_trackback}</label>
+					-->
+					<block cond="$is_logged">
+						<input type="checkbox" name="notify_message" class="iCheck" value="Y" checked="checked"|cond="$oDocument->useNotify()" id="notify_message" />
+						<label for="notify_message">{$lang->notify}</label>
+					</block>
+				</td>
+			</tr>
+			<tr>
+				<th>공개여부</th>
+				<td>
+					<!--@if(!$module_info->usersecret)-->
+						<!--@if(is_array($status_list))-->
+							<!--@foreach($status_list AS $key=>$value)-->
+							<input type="radio" name="status" value="{$key}" id="{$key}" <!--@if($oDocument->get('status') == $key || ($key == 'PUBLIC' && !$document_srl))-->checked="checked"<!--@end--> /> 
+							<label for="{$key}">{$value}</label>
+							<!--@end-->
+						<!--@end-->
+					<!--@else-->
+						<input type="radio" name="status" value="SECRET" id="SECRET" checked>
+						비밀
+					<!--@end-->
+				</td>
+			</tr>
+
+			<!--// extra-->
+			<block loop="$extra_keys=>$key,$val" cond="count($extra_keys)">
+				<tr class="exvar_cont" cond="!in_array($val->eid, $devExtra)">
+					<th scope="row"><em cond="$val->is_required=='Y'">*</em> {$val->name}</th>
+					<td>{$val->getFormHTML()}</td>
+				</tr>
+			</block>
+
+			<!--// tag -->
+			<tr cond="$module_info->ipSET_tagUse == 'Y'">
+				<th><label for="tags" class="iLabel">{$lang->tag}</label></th>
+				<td>
+					<input type="text" name="tags" id="tags" value="{htmlspecialchars($oDocument->get('tags'))}" class="iText" title="Tag" />
+					{$lang->about_tag}
+				</td>
+			</tr>
+		</table>
+	</div>
+
+		<!--//동영상입력폼-->
+		<div class="bo_pg_movie_w">
+			<strong>유튜브 동영상 정보 입력</strong>
+			<div class="bo_pg_movie_w_cont">
+				<block loop="$extra_keys=>$key,$val" cond="in_array($val->eid, $devExtra)">
+
+					<div cond="$val->eid == 'dex_embed_srl'">
+						<label class="bo_pg_form_tit" for="extra_vars{$val->idx}">{$val->name}</label>
+						<div class="bo_pg_form_input">
+							<input type="text" name="extra_vars{$val->idx}" id="extra_vars{$val->idx}" value="{$val->value}" class="iText">
+							<p class="bo_pg_infotext">
+								ex1) https://www.youtube.com/watch?v=Q0a8FIvvgGk  (유튜브 영상 주소 복사) <br>
+								ex2) Q0a8FIvvgGk  (유튜브 고유 id값)<br>
+								ex3) https://youtu.be/Q0a8FIvvgGk  (유튜브 공유에 나오는 주소 복사)
+							</p>
+						</div>
+					</div>
+
+					<!--// 자동재생  -->
+					<div cond="$val->eid == 'dex_autoplay'">
+						<label class="bo_pg_form_tit" for="extra_vars{$val->idx}">{$val->name}</label>
+						<div class="bo_pg_form_input">
+							{@$selectOptDefaultValue = '사용안함';}
+							<!--@foreach(explode(',',$val->default) AS $selectOptKey => $selectOptVal)-->
+							<input type="{$val->type}" name="extra_vars{$val->idx}" id="extra_vars{$val->idx.$selectOptKey}" value="{$selectOptVal}" checked|cond="$val->value === $selectOptVal" checked="(!$val->value) && $selectOptVal === $selectOptDefaultValue" class="cs_input_select">
+							<label for="extra_vars{$val->idx.$selectOptKey}"><span></span>{$selectOptVal}</label>
+							<!--@end-->
+						</div>
+					</div>
+
+					<!--// 영상종료후 추천방법 선택  -->
+					<div cond="$val->eid == 'dex_rel'">
+						<label class="bo_pg_form_tit" for="extra_vars{$val->idx}">{$val->name}</label>
+						<div class="bo_pg_form_input">
+							{@$selectOptDefaultValue = '해당채널내 추천';}
+							<!--@foreach(explode(',',$val->default) AS $selectOptKey => $selectOptVal)-->
+							<input type="{$val->type}" name="extra_vars{$val->idx}" id="extra_vars{$val->idx.$selectOptKey}" value="{$selectOptVal}" checked|cond="$val->value === $selectOptVal" checked="(!$val->value) && $selectOptVal === $selectOptDefaultValue" class="cs_input_select">
+							<label for="extra_vars{$val->idx.$selectOptKey}"><span></span>{$selectOptVal}</label>
+							<!--@end-->
+						</div>
+					</div>
+
+					<!--// 시작시간 종료시간 조절  -->
+					<div cond="$val->eid == 'dex_starttime'">
+							<div class="bo_pg_form_tit">시간설정</div>
+							<div class="bo_pg_form_input">
+								<div>
+									<block loop="$extra_keys=>$timeKey, $timeVal" cond="in_array($timeVal->eid, array('dex_starttime', 'dex_endtime'))">
+										<label for="extra_vars{$timeVal->idx}"><b>{$timeVal->name}</b></label>
+										<input type="text" name="extra_vars{$timeVal->idx}" id="extra_vars{$timeVal->idx}" value="{$timeVal->value}" class="iText" style="width:80px;">초
+									</block>
+								</div>
+								<p>종료시간 : 0초에서 부터 끝나는 시간</p>
+							</div>
+					</div>
+
+				</block>
+			</div>
+		</div>
+
+    
+    <div class="write_editor">
+		{$oDocument->getEditor()}
+		</div>
+	<div class="btn_set pull_center">
+		<block cond="!$oDocument->isExists() || $oDocument->get('status') == 'TEMP'">
+		<button cond="$is_logged" class="insp_btn" type="button" onclick="doDocumentSave(this);">{$lang->cmd_temp_save}</button>
+		<button cond="$is_logged" class="insp_btn" type="button" onclick="doDocumentLoad(this);">{$lang->cmd_load}</button>
+		</block>
+		<button type="submit" class="insp_btn"><i class="xi-pen"></i> {$lang->cmd_registration}</button>
+		<a href="javascript:history.back()" class="insp_btn">{$lang->cmd_prev}</a>
+	</div>
+</form>
+<include target="_footer.html" />

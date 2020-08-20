@@ -1,0 +1,170 @@
+<!--//<load target="board.default.css" />-->
+<!--//<load target="board.default.js" type="body" />-->
+<load target="css/default.css"/>
+<load target="../../../../common/xeicon/xeicon.min.css" />
+<load target="board.default.js"/>
+
+<!--//기본설정-->
+{@
+	$thumbnail_ratio_x = $module_info->thumbnail_ratio_x ?: '16';
+	$thumbnail_ratio_y = $module_info->thumbnail_ratio_y ?: '9';
+
+	$tempa = $thumbnail_ratio_x/100;
+	$thumbnail_ratio_y =  $thumbnail_ratio_y / $tempa;
+
+	//echo $thumbnail_ratio_y;
+
+	$module_info->thumbnail_width = $module_info->thumbnail_width ?: 480;
+	//$module_info->thumbnail_height = $module_info->thumbnail_height ?: 360;
+	$module_info->thumbnail_height = $module_info->thumbnail_width * ($thumbnail_ratio_y / 100);
+	$module_info->thumbnil_type = $module_info->thumbnil_type ?: 'crop';
+	$module_info->ipSET_fileShow = $module_info->ipSET_fileShow ?: 'N';
+
+	$view_type = $module_info->board_view_type;
+	$ipSET_noticecolor = $module_info->ipSET_noticecolor;
+	$ipSET_summary_cut = $module_info->ipSET_summary_cut ?: 70;
+
+	//리스트아이템
+	$ipSET_list_t_used = $module_info->ipSET_list_t_used ?: 'Y';
+	$ipSET_list_t_txt1 = $module_info->ipSET_list_t_txt1 ?: 'Y';
+	$ipSET_list_t_txt2 = $module_info->ipSET_list_t_txt2 ?: 'Y';
+	$ipSET_list_t_txt3 = $module_info->ipSET_list_t_txt3 ?: 'Y';
+	$ipSET_list_b_used = $module_info->ipSET_list_b_used ?: 'Y';
+	$ipSET_list_b_txt1 = $module_info->ipSET_list_b_txt1 ?: 'Y';
+	$ipSET_list_b_txt2 = $module_info->ipSET_list_b_txt2 ?: 'Y';
+	$ipSET_list_b_txt3 = $module_info->ipSET_list_b_txt3 ?: 'N';
+	$ipSET_list_tag = $module_info->ipSET_list_tag ?: 'N';
+	$ipSET_top_tag_sum = $module_info->ipSET_top_tag_sum  ?: 'Y';
+	$ipSET_top_tag_shuffle = $module_info->ipSET_top_tag_shuffle ?: 'Y';
+
+	//ajax
+	$ipSET_Ajax = $module_info->ipSET_Ajax ?: 'N';
+	$ipSET_Ajax_type = $module_info->ipSET_Ajax_type ?: 'click';
+
+	$ipSET_top_tag = $module_info->ipSET_top_tag ?: 'N';
+	$ipSET_top_tag_count = $module_info->ipSET_top_tag_count ?: 30;
+
+	$ipSET_btn_box_t = $module_info->ipSET_btn_box_t ?: 'N';
+	$ipSET_btn_box_b = $module_info->ipSET_btn_box_b ?: 'Y';
+}
+
+{@
+	$oDocumentModel = getModel('document');
+	$module_srl = $module_info->module_srl;
+	$getExtraKeys = $oDocumentModel->getExtraKeys($module_srl);
+
+	//고정 extra
+	$devExtra = ['dex_embed_srl','dex_autoplay','dex_rel','dex_starttime','dex_endtime'];
+
+	$xx_eid_name = $module_info->ipSET_embed_eid ?: 'dex_embed_srl'; //eid 기본설정값
+
+	//기본 idx값
+	//extra 업데이트
+	$xx_idx = count($getExtraKeys) + 1; 
+	$xx_update = true; //업데이트확인
+	$xx_update_dex_autoplay = true;
+	$xx_update_dex_rel = true;
+	$xx_update_dex_starttime = true;
+	$xx_update_dex_endtime = true;
+}
+
+
+<!--// extra 있는지 확인후 없으면 추가  -->
+<!--@if($getExtraKeys)-->
+	<!--@foreach($getExtraKeys as $val)-->
+		<!--@if($val->eid == $xx_eid_name)-->
+			{@$xx_update = false}
+		<!--@end-->
+
+		<!--@if($val->eid == 'dex_autoplay')-->
+			{@$xx_update_dex_autoplay = false}
+		<!--@end-->
+
+		<!--@if($val->eid == 'dex_rel')-->
+			{@$xx_update_dex_rel = false}
+		<!--@end-->
+
+		<!--@if($val->eid == 'dex_starttime')-->
+			{@$xx_update_dex_starttime = false}
+		<!--@end-->
+
+		<!--@if($val->eid == 'dex_endtime')-->
+			{@$xx_update_dex_endtime = false}
+		<!--@end-->
+	<!--@end-->
+<!--@end-->
+
+<!--@if($xx_update)-->
+	{@
+		$oDocumentController = getController('document');
+		$oDocumentController->insertDocumentExtraKey($module_srl, $xx_idx, '동영상URL', 'text', 'N', 'N', '', '', $xx_eid_name);
+		$xx_idx++;
+	}
+<!--@end-->
+
+<!--@if($xx_update_dex_autoplay)-->
+	{@
+		$oDocumentController = getController('document');
+		$oDocumentController->insertDocumentExtraKey($module_srl, $xx_idx, '자동재생', 'radio', 'N', 'N', '사용,사용안함', '', 'dex_autoplay');
+		$xx_idx++;
+	}
+<!--@end-->
+
+<!--@if($xx_update_dex_rel)-->
+	{@
+		$oDocumentController = getController('document');
+		$oDocumentController->insertDocumentExtraKey($module_srl, $xx_idx, '재생후추천', 'radio', 'N', 'N', '전체추천,해당채널내 추천', '', 'dex_rel');
+		$xx_idx++;
+	}
+<!--@end-->
+
+<!--@if($xx_update_dex_starttime)-->
+	{@
+		$oDocumentController = getController('document');
+		$oDocumentController->insertDocumentExtraKey($module_srl, $xx_idx, '시작시간', 'text', 'N', 'N', '', '초단위 입력', 'dex_starttime');
+		$xx_idx++;
+	}
+<!--@end-->
+
+<!--@if($xx_update_dex_endtime)-->
+	{@
+		$oDocumentController = getController('document');
+		$oDocumentController->insertDocumentExtraKey($module_srl, $xx_idx, '종료시간', 'text', 'N', 'N', '', '초단위로 윕력', 'dex_endtime');
+		$xx_idx++;
+	}
+<!--@end-->
+
+
+
+<?php /*
+<!--@if($order_type == "desc")-->
+    {@ $order_type = "asc"; }
+<!--@else-->
+    {@ $order_type = "desc"; }
+<!--@end-->
+*/
+?>
+
+<style>
+.boskin_gall_image{padding-top:{$thumbnail_ratio_y}%}
+</style>
+
+
+<block cond="!$module_info->duration_new = (int)$module_info->duration_new">{@ $module_info->duration_new = 24 }</block>
+
+{@ $cate_list = array(); $current_key = null; }
+<!--@foreach($category_list as $key=>$val)-->
+	<!--@if(!$val->depth)-->
+		{@
+			$cate_list[$key] = $val;
+			$cate_list[$key]->children = array();
+			$current_key = $key;
+		}
+	<!--@elseif($current_key)-->
+		{@ $cate_list[$current_key]->children[] = $val }
+	<!--@end-->
+<!--@end-->
+<div class="board">
+	{$module_info->header_text}
+
+	<div class="c_box3 mb10" cond="$module_info->description">{$module_info->description}</div>

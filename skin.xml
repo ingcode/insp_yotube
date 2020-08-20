@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+    <title xml:lang="ko">INSP 유튜브</title>
+		<description xml:lang="ko">유튜브 게시판입니다. 재배포금지</description>
+    <version>1.1</version>
+    <date>2017-12-08</date>
+    <author email_address="heyyobaby@daum.net" link="http://instantpage.kr">
+        <name xml:lang="ko">인스턴트페이지</name>
+    </author>
+    <license link="http://instantpage.kr/home/board_Dghz69/412091">기타 라이센스</license>
+    <extra_vars>
+
+			<group>
+				<title xml:lang="ko">Ajax</title>
+				<var name="ipSET_Ajax" type="radio" default="N">
+					<title xml:lang="ko">list</title>
+					<description xml:lang="ko">1페이지에서 Ajax loading 해당기능 사용시 하단의 페이징은 사라집니다.</description>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+				<var name="ipSET_Ajax_type" type="radio" default="click">
+					<title xml:lang="ko">로딩 방식</title>
+					<description xml:lang="ko">스크롤 로딩 : 리스트 하단쪽으로 스크롤을 내릴경우 자동으로 스크롤한다. / 클릭 로딩 : 리스트 하단에 로딩 버튼 생성 
+					출력갯수는 게시판정보&gt;기본&gt;목록수 갯수 - 공지사항 갯수
+					</description>
+					<options value="scroll">
+						<title xml:lang="ko">스크롤 로딩</title>
+					</options>
+					<options value="click">
+						<title xml:lang="ko">클릭 로딩</title>
+					</options>
+				</var>
+			</group>
+
+			<group>
+				<title xml:lang="ko">리스트</title>
+
+				<var name="ipSET_noticecolor" type="select">
+					<title xml:lang="ko">공지사항 색상</title>
+					<description xml:lang="ko">리스트상단 공지사항의 색상을 설정합니다.</description>
+					<options value="">
+						<title xml:lang="ko">흰색</title>
+					</options>
+					<options value="balck">
+						<title xml:lang="ko">검정</title>
+					</options>
+					<options value="red">
+						<title xml:lang="ko">빨강</title>
+					</options>
+				</var>
+
+				<var name="duration_new_use" type="radio" default="Y">
+					<title xml:lang="ko">신규글 아이콘표시</title>
+					<options value="Y">
+						<title xml:lang="ko">노출</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+
+				<var name="duration_new" type="text" default="24">
+					<title xml:lang="ko">신규글 표시시간</title>
+					<description xml:lang="ko">시간단위로입력</description>
+				</var>
+
+				<var name="ipSET_top_tag" type="radio" default="N">
+					<title xml:lang="ko">태그BOX</title>
+					<description xml:lang="ko">리스트페이지 상단에 태그박스</description>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+
+				<var name="ipSET_top_tag_shuffle" type="radio" default="Y">
+					<title xml:lang="ko">태그섞기</title>
+					<description xml:lang="ko">태그가 등록된 갯수와 상관 없이 섞음</description>
+					<options value="Y">
+						<title xml:lang="ko">섞기</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">순위대로</title>
+					</options>
+				</var>
+
+				<var name="ipSET_top_tag_count" type="text" default="30">
+					<title xml:lang="ko">태그BOX_태그출력갯수</title>
+					<description xml:lang="ko">출력할 태그 갯수</description>
+				</var>
+
+				<var name="ipSET_top_tag_sum" type="radio" default="Y">
+					<title xml:lang="ko">태그옆 갯수출력</title>
+					<description xml:lang="ko">태그옆에 해당 태그의 문서 갯수를 출력</description>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+
+
+				<var name="ipSET_btn_box_t" type="radio" default="N">
+					<title xml:lang="ko">상단 BTN BOX</title>
+					<description xml:lang="ko">상단에 출력할경우 페이징 없음</description>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+
+				<var name="ipSET_btn_box_b" type="radio" default="Y">
+					<title xml:lang="ko">하단 BTN BOX</title>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+
+			</group>
+
+			<group>
+				<title xml:lang="ko">리스트 아이템</title>
+				<var name="ipSET_list_tag" type="radio" default="N">
+					<title xml:lang="ko">오버레이태그</title>
+					<description xml:lang="ko">리스트 각 목록 이미지 위에 태그 출력여부</description>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+			</group>
+
+			<group>
+				<title xml:lang="ko">뷰페이지</title>
+				<var name="profileImage" type="radio">
+					<title xml:lang="ko">댓글 프로필 이미지 사용여부</title>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+
+				<var name="ipSET_fileShow" type="radio" default="Y">
+					<title xml:lang="ko">첨부파일 보여주기여부</title>
+					<options value="Y">
+						<title xml:lang="ko">보임</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">안보임</title>
+					</options>
+				</var>
+
+				<var name="ipSET_viewList" type="radio" default="Y">
+					<title xml:lang="ko">뷰페이지 리스트 출력</title>
+					<description xml:lang="ko">뷰페이지 하단에 목록 출력 여부</description>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">출력안함</title>
+					</options>
+				</var>
+
+
+				<var name="display_sign" type="radio">
+					<title xml:lang="ko">서명</title>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+
+				<!--트랙백기능??작동하는지??-->
+				<var name="trackback" type="radio">
+					<title xml:lang="ko">엮인글사용</title>
+					<description xml:lang="ko">엮인글,피드백 글쓰기화면에서 체크박스보여줄지 설정</description>
+					<options value="Y">
+						<title xml:lang="ko">사용함</title>
+					</options>
+					<options value="">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+			</group>
+
+			<group>
+				<title xml:lang="ko">글쓰기</title>
+				<var name="ipSET_tagUse" type="radio" default="N">
+					<title xml:lang="ko">태그사용여부</title>
+					<description xml:lang="ko">태그 입력폼 출력여부</description>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">사용안함</title>
+					</options>
+				</var>
+			</group>
+
+			<group>
+				<title xml:lang="ko">리스트 아이템 마우스오버 출력 설정</title>
+				<var name="ipSET_list_t_used" type="radio" default="Y">
+					<title xml:lang="ko">사용여부</title>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">미사용</title>
+					</options>
+				</var>
+				<var name="ipSET_list_t_txt1" type="radio" default="Y">
+					<title xml:lang="ko">제목</title>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+				<var name="ipSET_list_t_txt2" type="radio" default="Y">
+					<title xml:lang="ko">작성자 영역</title>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+				<var name="ipSET_list_t_txt3" type="radio" default="Y">
+					<title xml:lang="ko">사용자정의, 요약 영역</title>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+			</group>
+
+			<group>
+				<title xml:lang="ko">리스트 아이템 이미지 하단 출력 설정</title>
+				<var name="ipSET_list_b_used" type="radio" default="Y">
+					<title xml:lang="ko">사용여부</title>
+					<options value="Y">
+						<title xml:lang="ko">사용</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">미사용</title>
+					</options>
+				</var>
+				<var name="ipSET_list_b_txt1" type="radio" default="Y">
+					<title xml:lang="ko">제목</title>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+				<var name="ipSET_list_b_txt2" type="radio" default="Y">
+					<title xml:lang="ko">작성자 영역</title>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+				<var name="ipSET_list_b_txt3" type="radio" default="N">
+					<title xml:lang="ko">사용자정의, 요약 영역</title>
+					<options value="Y">
+						<title xml:lang="ko">출력</title>
+					</options>
+					<options value="N">
+						<title xml:lang="ko">감춤</title>
+					</options>
+				</var>
+			</group>
+			
+			
+
+			<group>
+				<title xml:lang="ko">동영상설정</title>
+				<var name="ipSET_embed_eid" default="dex_embed_srl" type="text">
+					<title xml:lang="ko">영상주소eid</title>
+					<description xml:lang="ko">사용자정의에서 동영상 URL이 기입되는 사용자 정의 이름(eid)</description>
+				</var>
+			</group>
+
+			
+			<group>
+				<title xml:lang="ko">겔러리설정</title>
+				<var name="thumbnail_ratio_x"  default="16">
+					<title xml:lang="ko">비율 x</title>
+					<description xml:lang="ko">x:y 기본비율 16:9</description>
+				</var>
+				<var name="thumbnail_ratio_y"  default="9">
+					<title xml:lang="ko">비율 y</title>
+					<description xml:lang="ko">x:y 기본비율 16:9</description>
+				</var>
+				<var name="thumbnail_width"  default="480">
+					<title xml:lang="ko">썸네일가로</title>
+					<description xml:lang="ko">기본480px, 가로크기만 입력하며 세로는 비율에 따라서 자동으로 조종됨 직접등록한 썸네일만 해당함</description>
+				</var>
+			</group>
+
+    </extra_vars>
+</skin>
+

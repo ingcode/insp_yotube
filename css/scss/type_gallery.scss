@@ -1,0 +1,189 @@
+$gAniSpeed : .5s;
+
+.board_gallery
+{
+	margin-left:-5px;margin-right: -5px;margin-top:-20px;
+	li
+	{
+		width:calc(33.3333% - 10px);
+		float:left;
+		position:relative;
+	}
+
+}
+
+.boskin_gall_item
+{
+	margin:20px 5px 20px 5px;
+
+	.boskin_sum_info
+	{
+		h2 a{display: block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+	}
+
+	.tags{position: absolute;left: 8px;bottom: 8px;background: #fff;padding:2px 7px 2px 5px;font-size: 11px;}
+}
+
+.boskin_gall_image
+{
+	padding-top:100%;
+	.boskin_image_link
+	{
+		position: absolute;left:8px;right:8px;top:8px;bottom:8px;transition:all $gAniSpeed;
+		background:{
+			position:center;
+			size:cover;
+		}
+	}
+
+	.boskin_mover
+	{
+		width:100%;height:100%;z-index:2;opacity:0;position:absolute;left:0;top:0;bottom:0;right:0;text-align:center;font-size:12px;background:rgba(0,0,0,.8);
+		transition:all $gAniSpeed;
+
+		> a{color:#bcbcbc;display:table;width: 100%;height: 100%;table-layout: fixed;transform:translate(0,-30px);transition:transform $gAniSpeed;}
+
+		.boskin_mover_wrap
+		{
+			display:table-cell;width:100%;vertical-align:middle;padding:0 15px;
+		}
+		
+		strong
+		{
+			display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:13px;color:#fff;
+		}
+	}
+
+	.new_icon{position: absolute;top: 10px;left: 10px;z-index:1;background: #56d6ce;color:#fff;width: 30px;height: 30px;text-align: center;font-size:18px;line-height: 31px;border-radius:50%;}
+
+	.lock_alert
+	{
+		user-select:none;
+		-ms-user-select:none;
+		position: absolute;
+		left: 8px;top: 8px;right: 8px;bottom: 8px;
+		> div{display: table;width: 100%;height:100%;text-align: center;}
+		> div > div{display:table-cell;vertical-align:middle;}
+		i{font-size:24px;}
+		span{display: block;font-size:12px;margin-top: 3px;}
+	}
+
+	&:hover
+	{
+		.boskin_image_link{transform:scale(1.1,1.1);}
+		.boskin_mover
+		{
+			opacity:1;
+			> a{transform:translate(0,0);}
+		}
+	}
+}
+
+.bo_no_image
+{
+	user-select:none;
+	-ms-user-select:none;
+	display:table;height: 100%;width: 100%;
+	> div{display:table-cell;width: 100%;vertical-align:middle;}
+	text-align: center;color: #a9a9a9;
+	i{font-size:24px;}
+	span{display: block;font-size:12px;margin-top: 3px;}
+}
+
+.lock_alert, .bo_no_image{background: radial-gradient(circle, #fff 30%, #e8e8e8);}
+
+
+//ajax loading
+
+.board_loader_box
+{
+	text-align: center;margin-top: 50px;
+	button
+	{
+		display:inline-block;background: #f1f1f1;padding:10px 20px;border:1px solid #e0e0e0;border-radius:5px;font-size: 12px;color: #676767;cursor:pointer;
+		&:focus{outline:none;}
+	}
+}
+
+.board_ajax_loading {
+  margin: 0 auto;
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-size: 10px;
+}
+
+.board_ajax_loading > div {
+  background-color: #56d6ce;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+	margin: 0 1px;
+  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.board_ajax_loading .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.board_ajax_loading .rect3 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.board_ajax_loading .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.board_ajax_loading .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+@-webkit-keyframes sk-stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@keyframes sk-stretchdelay {
+  0%, 40%, 100% { 
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }  20% { 
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
+}
+
+.board_ajax_end
+{
+	text-align: center;
+	span
+	{
+		display:inline-block;background: #f1f1f1;padding:10px 20px;border:1px solid #e0e0e0;border-radius:5px;font-size: 12px;color: #676767;
+		user-select:none;
+	}
+}
+
+
+
+@media (max-width:600px)
+{
+	.board_gallery
+	{
+		li{width:calc(50% - 10px);}
+	}
+
+	.boskin_gall_image
+	{
+		border-color:#fff;
+		.boskin_image_link{left: 0;top: 0;right: 0;bottom: 0;}
+	}
+}
+
+@media (max-width:400px)
+{
+}
