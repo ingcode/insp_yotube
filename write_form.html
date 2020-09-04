@@ -4,6 +4,9 @@
 	<input type="hidden" name="content" value="{$oDocument->getContentText()}" />
 	<input type="hidden" name="document_srl" value="{$document_srl}" />
 
+	<!--// todo : 비공개로만 설정하고 싶을때는 이거는 기본적으로 제공하는것 같던데 -->
+	<input type="hidden" name="status" value="PUBLIC" cond="count($status_list) < 2">
+
 	<caption><em>*</em> : {$lang->is_required}</caption>
 	<div class="boskin_table viewWrite">
 		<table>
@@ -66,13 +69,15 @@
 					</block>
 				</td>
 			</tr>
+
+			<!--@if(count($status_list) > 1)-->
 			<tr>
 				<th>공개여부</th>
 				<td>
 					<!--@if(!$module_info->usersecret)-->
 						<!--@if(is_array($status_list))-->
 							<!--@foreach($status_list AS $key=>$value)-->
-							<input type="radio" name="status" value="{$key}" id="{$key}" <!--@if($oDocument->get('status') == $key || ($key == 'PUBLIC' && !$document_srl))-->checked="checked"<!--@end--> /> 
+							<input type="radio" name="status" value="{$key}" id="{$key}" checked="checked"|cond="$oDocument->get('status') == $key || ($key == 'PUBLIC' && !$document_srl)" /> 
 							<label for="{$key}">{$value}</label>
 							<!--@end-->
 						<!--@end-->
@@ -82,6 +87,7 @@
 					<!--@end-->
 				</td>
 			</tr>
+			<!--@end-->
 
 			<!--// extra-->
 			<block loop="$extra_keys=>$key,$val" cond="count($extra_keys)">
@@ -121,12 +127,13 @@
 					</div>
 
 					<!--// 자동재생  -->
+					<!--// select type -->
 					<div cond="$val->eid == 'dex_autoplay'">
 						<label class="bo_pg_form_tit" for="extra_vars{$val->idx}">{$val->name}</label>
 						<div class="bo_pg_form_input">
 							{@$selectOptDefaultValue = '사용안함';}
 							<!--@foreach(explode(',',$val->default) AS $selectOptKey => $selectOptVal)-->
-							<input type="{$val->type}" name="extra_vars{$val->idx}" id="extra_vars{$val->idx.$selectOptKey}" value="{$selectOptVal}" checked|cond="$val->value === $selectOptVal" checked="(!$val->value) && $selectOptVal === $selectOptDefaultValue" class="cs_input_select">
+							<input type="{$val->type}" name="extra_vars{$val->idx}" id="extra_vars{$val->idx.$selectOptKey}" value="{$selectOptVal}" checked|cond="$val->value === $selectOptVal" checked|cond="!$val->value && $selectOptVal === $selectOptDefaultValue" class="cs_input_select">
 							<label for="extra_vars{$val->idx.$selectOptKey}"><span></span>{$selectOptVal}</label>
 							<!--@end-->
 						</div>
@@ -138,13 +145,14 @@
 						<div class="bo_pg_form_input">
 							{@$selectOptDefaultValue = '해당채널내 추천';}
 							<!--@foreach(explode(',',$val->default) AS $selectOptKey => $selectOptVal)-->
-							<input type="{$val->type}" name="extra_vars{$val->idx}" id="extra_vars{$val->idx.$selectOptKey}" value="{$selectOptVal}" checked|cond="$val->value === $selectOptVal" checked="(!$val->value) && $selectOptVal === $selectOptDefaultValue" class="cs_input_select">
+							<input type="{$val->type}" name="extra_vars{$val->idx}" id="extra_vars{$val->idx.$selectOptKey}" value="{$selectOptVal}" checked|cond="$val->value === $selectOptVal" checked|cond="(!$val->value) && $selectOptVal === $selectOptDefaultValue" class="cs_input_select">
 							<label for="extra_vars{$val->idx.$selectOptKey}"><span></span>{$selectOptVal}</label>
 							<!--@end-->
 						</div>
 					</div>
 
 					<!--// 시작시간 종료시간 조절  -->
+					<!-- text type 인라인으로 연결 -->
 					<div cond="$val->eid == 'dex_starttime'">
 							<div class="bo_pg_form_tit">시간설정</div>
 							<div class="bo_pg_form_input">
@@ -172,6 +180,7 @@
 		<button cond="$is_logged" class="insp_btn" type="button" onclick="doDocumentLoad(this);">{$lang->cmd_load}</button>
 		</block>
 		<button type="submit" class="insp_btn"><i class="xi-pen"></i> {$lang->cmd_registration}</button>
+		<!--// todo : 이전상태 history.back()가 아닌 url로 만들것!! 이거는 이전 history가 없을 경우 문제가 많음-->
 		<a href="javascript:history.back()" class="insp_btn">{$lang->cmd_prev}</a>
 	</div>
 </form>

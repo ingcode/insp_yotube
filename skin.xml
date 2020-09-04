@@ -2,7 +2,7 @@
 <skin version="0.2">
     <title xml:lang="ko">INSP 유튜브</title>
 		<description xml:lang="ko">유튜브 게시판입니다. 재배포금지</description>
-    <version>1.1</version>
+    <version>1.1.1</version>
     <date>2017-12-08</date>
     <author email_address="heyyobaby@daum.net" link="http://instantpage.kr">
         <name xml:lang="ko">인스턴트페이지</name>
